@@ -57,68 +57,149 @@ export const Login: React.FC = () => {
   const displayError = error;
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Welcome Back</h1>
-        <p className="text-xs sm:text-sm text-gray-600 mt-1">
-          Sign in to your account to continue
-        </p>
-      </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Full Screen Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/src/assets/sunrise.jpg')" }}
+      />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/85 via-blue-800/80 to-blue-900/85"></div>
 
-      {displayError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-sm">{displayError}</AlertDescription>
-        </Alert>
-      )}
-
-      <LoginForm onSubmit={handleLogin} />
-
-      {/* Business Information */}
-      <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-        <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm">
+      {/* Content Container */}
+      <div className="relative z-10 min-h-screen flex">
+        {/* Left Side - Brand & Information */}
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
+          {/* Brand */}
           <div>
-            <h2 className="font-semibold text-gray-900 mb-1 sm:mb-2">Our Mission</h2>
-            <p className="text-gray-600 leading-relaxed">{BUSINESS_INFO.mission}</p>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="h-12 w-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">BAT</h1>
+                <p className="text-sm text-blue-100">Business Activity Tracker</p>
+              </div>
+            </div>
+            
+            <h2 className="text-4xl font-bold mb-4 leading-tight">
+              Grow Your Wealth With<br />Smart Accounting Today
+            </h2>
           </div>
 
-          <div>
-            <h2 className="font-semibold text-gray-900 mb-1 sm:mb-2">Our Values</h2>
-            <ul className="list-disc list-inside text-gray-600 space-y-0.5 sm:space-y-1">
-              {BUSINESS_INFO.values.map((value, index) => (
-                <li key={index} className="leading-relaxed">{value}</li>
-              ))}
-            </ul>
-          </div>
+          {/* Business Information */}
+          <div className="space-y-6 max-w-lg">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <span className="h-2 w-2 bg-blue-300 rounded-full"></span>
+                Our Mission
+              </h3>
+              <p className="text-blue-50 text-sm leading-relaxed">
+                {BUSINESS_INFO.mission}
+              </p>
+            </div>
 
-          <div>
-            <h2 className="font-semibold text-gray-900 mb-1 sm:mb-2">Short-term Goals</h2>
-            <ul className="list-disc list-inside text-gray-600 space-y-0.5 sm:space-y-1">
-              {BUSINESS_INFO.shortTermGoals.map((goal, index) => (
-                <li key={index} className="leading-relaxed">{goal}</li>
-              ))}
-            </ul>
-          </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <span className="h-2 w-2 bg-blue-300 rounded-full"></span>
+                Our Values
+              </h3>
+              <ul className="space-y-2 text-blue-50 text-sm">
+                {BUSINESS_INFO.values.map((value, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-blue-300 mt-1">•</span>
+                    <span>{value}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h2 className="font-semibold text-gray-900 mb-1 sm:mb-2">Long-term Goals</h2>
-            <ul className="list-disc list-inside text-gray-600 space-y-0.5 sm:space-y-1">
-              {BUSINESS_INFO.longTermGoals.map((goal, index) => (
-                <li key={index} className="leading-relaxed">{goal}</li>
-              ))}
-            </ul>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
+                <h3 className="font-semibold mb-2 text-sm">Short-term Goals</h3>
+                <ul className="space-y-1.5 text-blue-50 text-xs">
+                  {BUSINESS_INFO.shortTermGoals.map((goal, index) => (
+                    <li key={index} className="flex items-start gap-1.5">
+                      <span className="text-blue-300 text-xs">•</span>
+                      <span className="leading-relaxed">{goal}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
+                <h3 className="font-semibold mb-2 text-sm">Long-term Goals</h3>
+                <ul className="space-y-1.5 text-blue-50 text-xs">
+                  {BUSINESS_INFO.longTermGoals.map((goal, index) => (
+                    <li key={index} className="flex items-start gap-1.5">
+                      <span className="text-blue-300 text-xs">•</span>
+                      <span className="leading-relaxed">{goal}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="text-center text-xs sm:text-sm">
-        <span className="text-gray-600">Don't have an account? </span>
-        <Link
-          to={ROUTES.SIGNUP}
-          className="font-medium text-blue-600 hover:text-blue-500 touch-manipulation"
-        >
-          Sign up
-        </Link>
+        {/* Right Side - Login Form */}
+        <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          {/* Mobile Brand */}
+          <div className="lg:hidden mb-8 text-center">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <div className="h-10 w-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <h1 className="text-xl font-bold text-gray-900">BAT</h1>
+                <p className="text-xs text-gray-600">Business Activity Tracker</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Login to your account</h2>
+              <p className="text-sm text-gray-600">
+                Welcome back! Please enter your details
+              </p>
+            </div>
+
+            {displayError && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-sm">{displayError}</AlertDescription>
+              </Alert>
+            )}
+
+            <LoginForm onSubmit={handleLogin} />
+
+            <div className="mt-6 text-center">
+              <span className="text-sm text-gray-600">Don't have an account? </span>
+              <Link
+                to={ROUTES.SIGNUP}
+                className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                Sign up for free
+              </Link>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <p className="text-xs text-center text-gray-500">
+                By continuing, you agree to our Terms of Service and Privacy Policy
+              </p>
+            </div>
+          </div>
+        </div>
+        </div>
       </div>
     </div>
   );

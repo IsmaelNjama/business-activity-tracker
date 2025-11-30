@@ -8,11 +8,11 @@ import { AdminDashboard } from '@/pages/AdminDashboard';
 import { Profile } from '@/pages/Profile';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AdminRoute } from '@/components/auth/AdminRoute';
-import { ExpenseReceiptUpload } from '@/components/activities/ExpenseReceiptUpload';
-import { SalesReceiptForm } from '@/components/activities/SalesReceiptForm';
-import { CustomerServiceForm } from '@/components/activities/CustomerServiceForm';
-import { ProductionActivityForm } from '@/components/activities/ProductionActivityForm';
-import { StorageInfoForm } from '@/components/activities/StorageInfoForm';
+import { ExpenseReceipts } from '@/pages/ExpenseReceipts';
+import { SalesReceipts } from '@/pages/SalesReceipts';
+import { CustomerService } from '@/pages/CustomerService';
+import { ProductionActivities } from '@/pages/ProductionActivities';
+import { StorageInfo } from '@/pages/StorageInfo';
 import { ROUTES } from '@/lib/constants';
 import { Toaster } from '@/components/ui/toaster';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -57,60 +57,12 @@ function App() {
         {/* Profile page */}
         <Route path="profile" element={<Profile />} />
         
-        {/* Activities page - Expense Upload */}
-        <Route
-          path="activities/expense"
-          element={
-            <div className="p-4 sm:p-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Log Expense</h1>
-              <ExpenseReceiptUpload />
-            </div>
-          }
-        />
-        
-        {/* Activities page - Sales Receipt */}
-        <Route
-          path="activities/sales"
-          element={
-            <div className="p-4 sm:p-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Record Sales Receipt</h1>
-              <SalesReceiptForm />
-            </div>
-          }
-        />
-        
-        {/* Activities page - Customer Service */}
-        <Route
-          path="activities/customer"
-          element={
-            <div className="p-4 sm:p-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Log Customer Service</h1>
-              <CustomerServiceForm />
-            </div>
-          }
-        />
-        
-        {/* Activities page - Production Activity */}
-        <Route
-          path="activities/production"
-          element={
-            <div className="p-4 sm:p-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Record Production Activity</h1>
-              <ProductionActivityForm />
-            </div>
-          }
-        />
-        
-        {/* Activities page - Storage Information */}
-        <Route
-          path="activities/storage"
-          element={
-            <div className="p-4 sm:p-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Record Storage Information</h1>
-              <StorageInfoForm />
-            </div>
-          }
-        />
+        {/* Activity Pages */}
+        <Route path="activities/expense" element={<ExpenseReceipts />} />
+        <Route path="activities/sales" element={<SalesReceipts />} />
+        <Route path="activities/customer" element={<CustomerService />} />
+        <Route path="activities/production" element={<ProductionActivities />} />
+        <Route path="activities/storage" element={<StorageInfo />} />
       </Route>
       
       {/* Catch all - redirect to login */}

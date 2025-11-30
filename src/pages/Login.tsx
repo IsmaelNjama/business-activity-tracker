@@ -61,7 +61,7 @@ export const Login: React.FC = () => {
       {/* Full Screen Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/src/assets/cat5.jpg')" }}
+        style={{ backgroundImage: "url('/src/assets/sunrise.jpg')" }}
       />
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/85 via-blue-800/80 to-blue-900/85"></div>

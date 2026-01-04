@@ -164,7 +164,7 @@ export const ERROR_MESSAGES = {
   STORAGE_FULL: 'Storage limit reached. Please contact administrator.',
   UNAUTHORIZED: 'You are not authorized to perform this action.',
   SESSION_EXPIRED: 'Your session has expired. Please log in again.',
-  INVALID_CREDENTIALS: 'Invalid email or password.',
+  INVALID_CREDENTIALS: 'Invalid username or password.',
   EMAIL_EXISTS: 'An account with this email already exists.',
   FILE_TOO_LARGE: 'File size must be less than 10MB.',
   INVALID_FILE_TYPE: 'Please upload a valid image file.'

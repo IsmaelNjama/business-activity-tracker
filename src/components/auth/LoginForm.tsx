@@ -28,20 +28,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = fals
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
-      {/* Email */}
+      {/* Username */}
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm">Email</Label>
+        <Label htmlFor="username" className="text-sm">Username</Label>
         <Input
-          id="email"
-          type="email"
-          placeholder="Enter your email"
-          {...register('email')}
-          className={errors.email ? 'border-red-500 focus:ring-red-500 h-10 sm:h-11' : 'h-10 sm:h-11'}
+          id="username"
+          type="text"
+          placeholder="Enter your username"
+          {...register('username')}
+          className={errors.username ? 'border-red-500 focus:ring-red-500 h-10 sm:h-11' : 'h-10 sm:h-11'}
           disabled={loading}
-          autoComplete="email"
+          autoComplete="username"
         />
-        {errors.email && (
-          <p className="text-xs sm:text-sm text-red-600">{errors.email.message}</p>
+        {errors.username && (
+          <p className="text-xs sm:text-sm text-red-600">{errors.username.message}</p>
         )}
       </div>
       

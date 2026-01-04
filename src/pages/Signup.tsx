@@ -19,6 +19,7 @@ export const Signup: React.FC = () => {
       setError(null);
       clearError();
       await signup(data);
+      console.log("User signup data >>>>>",data)
       
       toast({
         title: 'Success',

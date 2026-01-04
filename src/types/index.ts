@@ -1,6 +1,7 @@
 // User Types
 export interface User {
   id: string;
+  username: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -70,6 +71,7 @@ export type Activity =
 
 // Form Data Types
 export interface SignupData {
+  username: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -80,7 +82,7 @@ export interface SignupData {
 }
 
 export interface LoginData {
-  email: string;
+  username: string;
   password: string;
 }
 

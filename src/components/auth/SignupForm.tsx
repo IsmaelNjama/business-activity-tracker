@@ -34,6 +34,22 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = fa
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+      {/* Username */}
+      <div className="space-y-2">
+        <Label htmlFor="username" className="text-sm">Username</Label>
+        <Input
+          id="username"
+          type="text"
+          placeholder="Enter your username"
+          {...register('username')}
+          className={errors.username ? 'border-red-500 focus:ring-red-500 h-10 sm:h-11' : 'h-10 sm:h-11'}
+          disabled={loading}
+        />
+        {errors.username && (
+          <p className="text-xs sm:text-sm text-red-600">{errors.username.message}</p>
+        )}
+      </div>
+      
       {/* Name Fields - Side by side on larger screens */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {/* First Name */}

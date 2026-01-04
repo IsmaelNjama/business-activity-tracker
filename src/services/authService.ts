@@ -1,6 +1,7 @@
 import { User, SignupData, LoginData } from '../types';
 import {
   getUserByEmail,
+  getUsers,
   saveUser,
   updateUser,
   saveSession,
@@ -28,7 +29,7 @@ const verifyPassword = (password: string, hashedPassword: string): boolean => {
 
 // Store hashed passwords separately (in production, this would be in the backend database)
 interface StoredCredentials {
-  [email: string]: string; // email -> hashedPassword
+  [username: string]: string; // username -> hashedPassword
 }
 
 const CREDENTIALS_KEY = 'app_credentials';
@@ -52,7 +53,7 @@ const saveCredentials = (credentials: StoredCredentials): void => {
  * Register a new user
  */
 export const signup = async (signupData: SignupData): Promise<User> => {
-  // Check if user already exists
+  // Check if user already exists by email
   const existingUser = getUserByEmail(signupData.email);
   if (existingUser) {
     throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
@@ -61,6 +62,7 @@ export const signup = async (signupData: SignupData): Promise<User> => {
   // Create new user
   const newUser: User = {
     id: crypto.randomUUID(),
+    username: signupData.username,
     firstName: signupData.firstName,
     lastName: signupData.lastName,
     email: signupData.email,
@@ -70,10 +72,10 @@ export const signup = async (signupData: SignupData): Promise<User> => {
     createdAt: new Date().toISOString()
   };
 
-  // Hash and store password
+  // Hash and store password with username as key
   const hashedPassword = hashPassword(signupData.password);
   const credentials = getCredentials();
-  credentials[signupData.email.toLowerCase()] = hashedPassword;
+  credentials[signupData.username.toLowerCase()] = hashedPassword;
   saveCredentials(credentials);
 
   // Save user to storage
@@ -83,20 +85,22 @@ export const signup = async (signupData: SignupData): Promise<User> => {
 };
 
 /**
- * Login user with email and password
+ * Login user with username and password
  */
 export const login = async (loginData: LoginData): Promise<User> => {
-  // Find user by email
-  const user = getUserByEmail(loginData.email);
-  if (!user) {
+  // Get all users and find one with matching username
+  const credentials = getCredentials();
+  const hashedPassword = credentials[loginData.username.toLowerCase()];
+  
+  if (!hashedPassword || !verifyPassword(loginData.password, hashedPassword)) {
     throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
   }
 
-  // Verify password
-  const credentials = getCredentials();
-  const hashedPassword = credentials[loginData.email.toLowerCase()];
+  // Find user by username - search through stored users
+  const users = getUsers();
+  const user = users.find(u => u.username && u.username.toLowerCase() === loginData.username.toLowerCase());
   
-  if (!hashedPassword || !verifyPassword(loginData.password, hashedPassword)) {
+  if (!user) {
     throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
   }
 

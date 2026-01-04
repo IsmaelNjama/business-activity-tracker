@@ -127,7 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await authService.signup(signupData);
       // After signup, automatically log the user in
-      await login({ email: signupData.email, password: signupData.password });
+         await login({ username: signupData.username, password: signupData.password });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Signup failed';
       setError(errorMessage);

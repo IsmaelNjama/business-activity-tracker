@@ -78,7 +78,7 @@ export interface SignupData {
   phoneNumber: string;
   gender: 'male' | 'female' | 'other';
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 }
 
 export interface LoginData {

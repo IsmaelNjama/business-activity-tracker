@@ -1,4 +1,5 @@
 import { User, SignupData, LoginData } from '../types';
+import { apiService } from '@/api/api';
 import {
   getUserByEmail,
   getUsers,
@@ -53,35 +54,43 @@ const saveCredentials = (credentials: StoredCredentials): void => {
  * Register a new user
  */
 export const signup = async (signupData: SignupData): Promise<User> => {
+    try {
+      const newUser = await apiService.registerEmployee(signupData);
+      saveUser(newUser);
+      return newUser;
+    } catch (error) {
+      throw new Error('Registration failed: ' + (error as Error).message);
+      
+    }
   // Check if user already exists by email
-  const existingUser = getUserByEmail(signupData.email);
-  if (existingUser) {
-    throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
-  }
+  // const existingUser = getUserByEmail(signupData.email);
+  // if (existingUser) {
+  //   throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
+  // }
 
-  // Create new user
-  const newUser: User = {
-    id: crypto.randomUUID(),
-    username: signupData.username,
-    firstName: signupData.firstName,
-    lastName: signupData.lastName,
-    email: signupData.email,
-    phoneNumber: signupData.phoneNumber,
-    gender: signupData.gender,
-    role: 'employee', // Default role is employee
-    createdAt: new Date().toISOString()
-  };
+  // // Create new user
+  // const newUser: User = {
+  //   id: crypto.randomUUID(),
+  //   username: signupData.username,
+  //   firstName: signupData.firstName,
+  //   lastName: signupData.lastName,
+  //   email: signupData.email,
+  //   phoneNumber: signupData.phoneNumber,
+  //   gender: signupData.gender,
+  //   role: 'employee', // Default role is employee
+  //   createdAt: new Date().toISOString()
+  // };
 
-  // Hash and store password with username as key
-  const hashedPassword = hashPassword(signupData.password);
-  const credentials = getCredentials();
-  credentials[signupData.username.toLowerCase()] = hashedPassword;
-  saveCredentials(credentials);
+  // // Hash and store password with username as key
+  // const hashedPassword = hashPassword(signupData.password);
+  // const credentials = getCredentials();
+  // credentials[signupData.username.toLowerCase()] = hashedPassword;
+  // saveCredentials(credentials);
 
   // Save user to storage
-  saveUser(newUser);
+  
 
-  return newUser;
+
 };
 
 /**

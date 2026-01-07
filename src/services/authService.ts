@@ -1,4 +1,4 @@
-import { User, SignupData, LoginData } from '../types';
+import { User, SignupData, LoginData, LoginResponse } from '../types';
 import { apiService } from '@/api/api';
 import {
   getUserByEmail,
@@ -18,15 +18,15 @@ import { ERROR_MESSAGES } from '../lib/constants';
 
 // Simple password hashing simulation for MVP
 // In production, this should be handled by the backend with proper bcrypt/argon2
-const hashPassword = (password: string): string => {
-  // Simple base64 encoding for MVP - NOT SECURE for production
-  // This is just a placeholder to simulate password hashing
-  return btoa(password + '_hashed_salt_2024');
-};
+// const hashPassword = (password: string): string => {
+//   // Simple base64 encoding for MVP - NOT SECURE for production
+//   // This is just a placeholder to simulate password hashing
+//   return btoa(password + '_hashed_salt_2024');
+// };
 
-const verifyPassword = (password: string, hashedPassword: string): boolean => {
-  return hashPassword(password) === hashedPassword;
-};
+// const verifyPassword = (password: string, hashedPassword: string): boolean => {
+//   return hashPassword(password) === hashedPassword;
+// };
 
 // Store hashed passwords separately (in production, this would be in the backend database)
 interface StoredCredentials {
@@ -55,76 +55,55 @@ const saveCredentials = (credentials: StoredCredentials): void => {
  */
 export const signup = async (signupData: SignupData): Promise<User> => {
     try {
-      const newUser = await apiService.registerEmployee(signupData);
+      const { confirmPassword, ...dataToPost } = signupData;
+      const newUser = await apiService.registerEmployee(dataToPost);
       saveUser(newUser);
       return newUser;
     } catch (error) {
       throw new Error('Registration failed: ' + (error as Error).message);
       
     }
-  // Check if user already exists by email
-  // const existingUser = getUserByEmail(signupData.email);
-  // if (existingUser) {
-  //   throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
-  // }
-
-  // // Create new user
-  // const newUser: User = {
-  //   id: crypto.randomUUID(),
-  //   username: signupData.username,
-  //   firstName: signupData.firstName,
-  //   lastName: signupData.lastName,
-  //   email: signupData.email,
-  //   phoneNumber: signupData.phoneNumber,
-  //   gender: signupData.gender,
-  //   role: 'employee', // Default role is employee
-  //   createdAt: new Date().toISOString()
-  // };
-
-  // // Hash and store password with username as key
-  // const hashedPassword = hashPassword(signupData.password);
-  // const credentials = getCredentials();
-  // credentials[signupData.username.toLowerCase()] = hashedPassword;
-  // saveCredentials(credentials);
-
-  // Save user to storage
-  
-
 
 };
 
 /**
  * Login user with username and password
  */
-export const login = async (loginData: LoginData): Promise<User> => {
-  // Get all users and find one with matching username
-  const credentials = getCredentials();
-  const hashedPassword = credentials[loginData.username.toLowerCase()];
-  
-  if (!hashedPassword || !verifyPassword(loginData.password, hashedPassword)) {
+export const login = async (loginData: LoginData): Promise<LoginResponse> => {
+  if (!loginData.username || !loginData.password) {
     throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
   }
 
-  // Find user by username - search through stored users
-  const users = getUsers();
-  const user = users.find(u => u.username && u.username.toLowerCase() === loginData.username.toLowerCase());
+  const response = await apiService.loginEmployee(loginData)
+  console.log(response)
+  // Get all users and find one with matching username
+  // const credentials = getCredentials();
+  // const hashedPassword = credentials[loginData.username.toLowerCase()];
   
-  if (!user) {
-    throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
-  }
+  // if (!hashedPassword || !verifyPassword(loginData.password, hashedPassword)) {
+  //   throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+  // }
+
+  // // Find user by username - search through stored users
+  // const users = getUsers();
+  // const user = users.find(u => u.username && u.username.toLowerCase() === loginData.username.toLowerCase());
+  
+  // if (!user) {
+  //   throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+  // }
 
   // Create session
   const sessionData: SessionData = {
-    userId: user.id,
-    email: user.email,
-    role: user.role,
+    userId: response.employee.id,
+    email: response.employee.email,
+    role: response.employee.role,
     lastActivity: Date.now()
   };
 
   saveSession(sessionData);
-  saveCurrentUser(user);
+  saveCurrentUser(response.employee);
 
-  return user;
+  return response;
 };
 
 /**
@@ -158,31 +137,31 @@ export const getCurrentAuthUser = (): User | null => {
 };
 
 /**
- * Update user profile
- */
-export const updateProfile = async (
-  userId: string,
-  updates: Partial<Omit<User, 'id' | 'role' | 'createdAt'>>
-): Promise<User> => {
-  // If email is being updated, check if new email already exists
-  if (updates.email) {
-    const existingUser = getUserByEmail(updates.email);
-    if (existingUser && existingUser.id !== userId) {
-      throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
-    }
-  }
+//  * Update user profile
+//  */
+// export const updateProfile = async (
+//   userId: string,
+//   updates: Partial<Omit<User, 'id' | 'role' | 'createdAt'>>
+// ): Promise<User> => {
+//   // If email is being updated, check if new email already exists
+//   if (updates.email) {
+//     const existingUser = getUserByEmail(updates.email);
+//     if (existingUser && existingUser.id !== userId) {
+//       throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
+//     }
+//   }
 
-  // Update user
-  const updatedUser = updateUser(userId, updates);
+//   // Update user
+//   const updatedUser = updateUser(userId, updates);
 
-  // Update current user in storage if it's the same user
-  const session = getSession();
-  if (session && session.userId === userId) {
-    saveCurrentUser(updatedUser);
-  }
+//   // Update current user in storage if it's the same user
+//   const session = getSession();
+//   if (session && session.userId === userId) {
+//     saveCurrentUser(updatedUser);
+//   }
 
-  return updatedUser;
-};
+//   return updatedUser;
+// };
 
 /**
  * Check if user is authenticated
@@ -191,39 +170,39 @@ export const isAuthenticated = (): boolean => {
   return isSessionValid() && getSession() !== null;
 };
 
-/**
- * Check if current user is admin
- */
-export const isAdmin = (): boolean => {
-  const session = getSession();
-  return session?.role === 'admin';
-};
+// /**
+//  * Check if current user is admin
+//  */
+// export const isAdmin = (): boolean => {
+//   const session = getSession();
+//   return session?.role === 'admin';
+// };
 
-/**
- * Change user password
- */
-export const changePassword = async (
-  email: string,
-  oldPassword: string,
-  newPassword: string
-): Promise<void> => {
-  // Verify old password
-  const credentials = getCredentials();
-  const hashedPassword = credentials[email.toLowerCase()];
+// /**
+//  * Change user password
+//  */
+// export const changePassword = async (
+//   email: string,
+//   oldPassword: string,
+//   newPassword: string
+// ): Promise<void> => {
+//   // Verify old password
+//   const credentials = getCredentials();
+//   const hashedPassword = credentials[email.toLowerCase()];
   
-  if (!hashedPassword || !verifyPassword(oldPassword, hashedPassword)) {
-    throw new Error('Current password is incorrect');
-  }
+//   if (!hashedPassword || !verifyPassword(oldPassword, hashedPassword)) {
+//     throw new Error('Current password is incorrect');
+//   }
 
-  // Hash and save new password
-  const newHashedPassword = hashPassword(newPassword);
-  credentials[email.toLowerCase()] = newHashedPassword;
-  saveCredentials(credentials);
-};
+//   // Hash and save new password
+//   const newHashedPassword = hashPassword(newPassword);
+//   credentials[email.toLowerCase()] = newHashedPassword;
+//   saveCredentials(credentials);
+// };
 
-/**
- * Promote user to admin (for testing purposes)
- */
-export const promoteToAdmin = (userId: string): User => {
-  return updateUser(userId, { role: 'admin' });
-};
+// /**
+//  * Promote user to admin (for testing purposes)
+//  */
+// export const promoteToAdmin = (userId: string): User => {
+//   return updateUser(userId, { role: 'admin' });
+// };

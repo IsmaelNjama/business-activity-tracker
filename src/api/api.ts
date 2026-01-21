@@ -2,27 +2,6 @@ import { EmployeeRegisterPayload, User, LoginData, LoginResponse } from "@/types
 
 const API_BASE_URL = 'http://localhost:8000/v1';
 
-// export interface ApiEmployeeRegisterInputs {
-//   user_name: string
-//   first_name: string
-//   last_name: string
-//   email: string
-//   phone_number: string
-//   gender: string
-//   password: string
-// }
-
-// export interface ApiEmployeeRegisterResponse {
-//   user_name: string
-//   first_name: string
-//   last_name: string
-//   email: string
-//   phone_number: string
-//   gender: string
-//   id: number
-//   role: string
-// }
-
 
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -45,6 +24,7 @@ class ApiService {
       headers,
       
     });
+    
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
@@ -69,6 +49,14 @@ class ApiService {
       body: formData,
     });
   }
+
+  async getAllEmployees(): Promise<User[]> {
+    return this.request<User[]>('/employees', {
+      method: 'GET',
+      
+  })
+  }
+  
 
   // async healthCheck() {
     

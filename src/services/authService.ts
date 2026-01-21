@@ -76,21 +76,10 @@ export const login = async (loginData: LoginData): Promise<LoginResponse> => {
 
   const response = await apiService.loginEmployee(loginData)
   console.log(response)
-  // Get all users and find one with matching username
-  // const credentials = getCredentials();
-  // const hashedPassword = credentials[loginData.username.toLowerCase()];
-  
-  // if (!hashedPassword || !verifyPassword(loginData.password, hashedPassword)) {
-  //   throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
-  // }
+  localStorage.setItem('token', response.access_token)
+  localStorage.setItem('employee', JSON.stringify(response.employee))
 
-  // // Find user by username - search through stored users
-  // const users = getUsers();
-  // const user = users.find(u => u.username && u.username.toLowerCase() === loginData.username.toLowerCase());
   
-  // if (!user) {
-  //   throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
-  // }
 
   // Create session
   const sessionData: SessionData = {
@@ -136,32 +125,32 @@ export const getCurrentAuthUser = (): User | null => {
   return user;
 };
 
-/**
+
 //  * Update user profile
-//  */
-// export const updateProfile = async (
-//   userId: string,
-//   updates: Partial<Omit<User, 'id' | 'role' | 'createdAt'>>
-// ): Promise<User> => {
-//   // If email is being updated, check if new email already exists
-//   if (updates.email) {
-//     const existingUser = getUserByEmail(updates.email);
-//     if (existingUser && existingUser.id !== userId) {
-//       throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
-//     }
-//   }
 
-//   // Update user
-//   const updatedUser = updateUser(userId, updates);
+export const updateProfile = async (
+  userId: string,
+  updates: Partial<Omit<User, 'id' | 'role' | 'createdAt'>>
+): Promise<User> => {
+  // If email is being updated, check if new email already exists
+  if (updates.email) {
+    const existingUser = getUserByEmail(updates.email);
+    if (existingUser && existingUser.id !== userId) {
+      throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
+    }
+  }
 
-//   // Update current user in storage if it's the same user
-//   const session = getSession();
-//   if (session && session.userId === userId) {
-//     saveCurrentUser(updatedUser);
-//   }
+  // Update user
+  const updatedUser = updateUser(userId, updates);
 
-//   return updatedUser;
-// };
+  // Update current user in storage if it's the same user
+  const session = getSession();
+  if (session && session.userId === userId) {
+    saveCurrentUser(updatedUser);
+  }
+
+  return updatedUser;
+};
 
 /**
  * Check if user is authenticated
@@ -170,13 +159,13 @@ export const isAuthenticated = (): boolean => {
   return isSessionValid() && getSession() !== null;
 };
 
-// /**
-//  * Check if current user is admin
-//  */
-// export const isAdmin = (): boolean => {
-//   const session = getSession();
-//   return session?.role === 'admin';
-// };
+/**
+ * Check if current user is admin
+ */
+export const isAdmin = (): boolean => {
+  const session = getSession();
+  return session?.role === 'admin';
+};
 
 // /**
 //  * Change user password

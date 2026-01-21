@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       const loggedInUser = await authService.login(loginData);
-      setUser(loggedInUser);
+      setUser(loggedInUser.employee);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setError(errorMessage);

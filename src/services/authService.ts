@@ -1,5 +1,5 @@
 import { User, SignupData, LoginData, LoginResponse } from '../types';
-import { apiService } from '@/api/api';
+import { authApiService } from '@/api/authApi';
 import {
   getUserByEmail,
   getUsers,
@@ -56,7 +56,7 @@ const saveCredentials = (credentials: StoredCredentials): void => {
 export const signup = async (signupData: SignupData): Promise<User> => {
     try {
       const { confirmPassword, ...dataToPost } = signupData;
-      const newUser = await apiService.registerEmployee(dataToPost);
+      const newUser = await authApiService.registerEmployee(dataToPost);
       saveUser(newUser);
       return newUser;
     } catch (error) {
@@ -74,7 +74,7 @@ export const login = async (loginData: LoginData): Promise<LoginResponse> => {
     throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
   }
 
-  const response = await apiService.loginEmployee(loginData)
+  const response = await authApiService.loginEmployee(loginData)
   console.log(response)
   localStorage.setItem('token', response.access_token)
   localStorage.setItem('employee', JSON.stringify(response.employee))
@@ -167,31 +167,4 @@ export const isAdmin = (): boolean => {
   return session?.role === 'admin';
 };
 
-// /**
-//  * Change user password
-//  */
-// export const changePassword = async (
-//   email: string,
-//   oldPassword: string,
-//   newPassword: string
-// ): Promise<void> => {
-//   // Verify old password
-//   const credentials = getCredentials();
-//   const hashedPassword = credentials[email.toLowerCase()];
-  
-//   if (!hashedPassword || !verifyPassword(oldPassword, hashedPassword)) {
-//     throw new Error('Current password is incorrect');
-//   }
 
-//   // Hash and save new password
-//   const newHashedPassword = hashPassword(newPassword);
-//   credentials[email.toLowerCase()] = newHashedPassword;
-//   saveCredentials(credentials);
-// };
-
-// /**
-//  * Promote user to admin (for testing purposes)
-//  */
-// export const promoteToAdmin = (userId: string): User => {
-//   return updateUser(userId, { role: 'admin' });
-// };

@@ -1,3 +1,4 @@
+import { activityApiService } from '@/api/activityApi';
 import { Activity, ActivityType, ActivityFilters } from '../types';
 import * as storageService from './storageService';
 
@@ -11,14 +12,17 @@ export const createActivity = async (
   
   const newActivity: Activity = {
     ...activityData,
-    id: crypto.randomUUID(),
     createdAt: now,
     updatedAt: now
   } as Activity;
+  console.log("ne activity here>>>>>",newActivity);
+  const activity = await activityApiService.createActivity(newActivity)
 
-  storageService.saveActivity(newActivity);
+  storageService.saveActivity(activity);
   return newActivity;
 };
+
+
 
 /**
  * Get all activities

@@ -1,6 +1,7 @@
 import { User, Activity } from '../types';
 import { STORAGE_KEYS, ERROR_MESSAGES } from '../lib/constants';
 
+
 // Storage error class for better error handling
 export class StorageError extends Error {
   constructor(message: string) {

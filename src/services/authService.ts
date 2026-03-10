@@ -1,7 +1,7 @@
-import { User, SignupData, LoginData } from '../types';
+import { User, SignupData, LoginData, LoginResponse } from '../types';
+import { authApiService } from '@/api/authApi';
 import {
   getUserByEmail,
-  getUsers,
   saveUser,
   updateUser,
   saveSession,
@@ -17,105 +17,81 @@ import { ERROR_MESSAGES } from '../lib/constants';
 
 // Simple password hashing simulation for MVP
 // In production, this should be handled by the backend with proper bcrypt/argon2
-const hashPassword = (password: string): string => {
-  // Simple base64 encoding for MVP - NOT SECURE for production
-  // This is just a placeholder to simulate password hashing
-  return btoa(password + '_hashed_salt_2024');
-};
+// const hashPassword = (password: string): string => {
+//   // Simple base64 encoding for MVP - NOT SECURE for production
+//   // This is just a placeholder to simulate password hashing
+//   return btoa(password + '_hashed_salt_2024');
+// };
 
-const verifyPassword = (password: string, hashedPassword: string): boolean => {
-  return hashPassword(password) === hashedPassword;
-};
+// const verifyPassword = (password: string, hashedPassword: string): boolean => {
+//   return hashPassword(password) === hashedPassword;
+// };
 
 // Store hashed passwords separately (in production, this would be in the backend database)
-interface StoredCredentials {
-  [username: string]: string; // username -> hashedPassword
-}
+// interface StoredCredentials {
+//   [username: string]: string; // username -> hashedPassword
+// }
 
-const CREDENTIALS_KEY = 'app_credentials';
+// const CREDENTIALS_KEY = 'app_credentials';
 
-const getCredentials = (): StoredCredentials => {
-  const data = localStorage.getItem(CREDENTIALS_KEY);
-  if (!data) return {};
+// const getCredentials = (): StoredCredentials => {
+//   const data = localStorage.getItem(CREDENTIALS_KEY);
+//   if (!data) return {};
   
-  try {
-    return JSON.parse(data) as StoredCredentials;
-  } catch {
-    return {};
-  }
-};
+//   try {
+//     return JSON.parse(data) as StoredCredentials;
+//   } catch {
+//     return {};
+//   }
+// };
 
-const saveCredentials = (credentials: StoredCredentials): void => {
-  localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
-};
+// const saveCredentials = (credentials: StoredCredentials): void => {
+//   localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+// };
 
 /**
  * Register a new user
  */
 export const signup = async (signupData: SignupData): Promise<User> => {
-  // Check if user already exists by email
-  const existingUser = getUserByEmail(signupData.email);
-  if (existingUser) {
-    throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
-  }
+    try {
+      const { confirmPassword, ...dataToPost } = signupData;
+      const newUser = await authApiService.registerEmployee(dataToPost);
+      saveUser(newUser);
+      return newUser;
+    } catch (error) {
+      throw new Error('Registration failed: ' + (error as Error).message);
+      
+    }
 
-  // Create new user
-  const newUser: User = {
-    id: crypto.randomUUID(),
-    username: signupData.username,
-    firstName: signupData.firstName,
-    lastName: signupData.lastName,
-    email: signupData.email,
-    phoneNumber: signupData.phoneNumber,
-    gender: signupData.gender,
-    role: 'employee', // Default role is employee
-    createdAt: new Date().toISOString()
-  };
-
-  // Hash and store password with username as key
-  const hashedPassword = hashPassword(signupData.password);
-  const credentials = getCredentials();
-  credentials[signupData.username.toLowerCase()] = hashedPassword;
-  saveCredentials(credentials);
-
-  // Save user to storage
-  saveUser(newUser);
-
-  return newUser;
 };
 
 /**
  * Login user with username and password
  */
-export const login = async (loginData: LoginData): Promise<User> => {
-  // Get all users and find one with matching username
-  const credentials = getCredentials();
-  const hashedPassword = credentials[loginData.username.toLowerCase()];
-  
-  if (!hashedPassword || !verifyPassword(loginData.password, hashedPassword)) {
+export const login = async (loginData: LoginData): Promise<LoginResponse> => {
+  if (!loginData.username || !loginData.password) {
     throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
   }
 
-  // Find user by username - search through stored users
-  const users = getUsers();
-  const user = users.find(u => u.username && u.username.toLowerCase() === loginData.username.toLowerCase());
+  const response = await authApiService.loginEmployee(loginData)
+  console.log(response)
+  localStorage.setItem('token', response.access_token)
+  localStorage.setItem('employee', JSON.stringify(response.employee))
+
   
-  if (!user) {
-    throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
-  }
 
   // Create session
   const sessionData: SessionData = {
-    userId: user.id,
-    email: user.email,
-    role: user.role,
+    userId: response.employee.id,
+    email: response.employee.email,
+    role: response.employee.role,
     lastActivity: Date.now()
   };
 
   saveSession(sessionData);
-  saveCurrentUser(user);
+  saveCurrentUser(response.employee);
 
-  return user;
+  return response;
 };
 
 /**
@@ -148,9 +124,9 @@ export const getCurrentAuthUser = (): User | null => {
   return user;
 };
 
-/**
- * Update user profile
- */
+
+//  * Update user profile
+
 export const updateProfile = async (
   userId: string,
   updates: Partial<Omit<User, 'id' | 'role' | 'createdAt'>>
@@ -190,31 +166,4 @@ export const isAdmin = (): boolean => {
   return session?.role === 'admin';
 };
 
-/**
- * Change user password
- */
-export const changePassword = async (
-  email: string,
-  oldPassword: string,
-  newPassword: string
-): Promise<void> => {
-  // Verify old password
-  const credentials = getCredentials();
-  const hashedPassword = credentials[email.toLowerCase()];
-  
-  if (!hashedPassword || !verifyPassword(oldPassword, hashedPassword)) {
-    throw new Error('Current password is incorrect');
-  }
 
-  // Hash and save new password
-  const newHashedPassword = hashPassword(newPassword);
-  credentials[email.toLowerCase()] = newHashedPassword;
-  saveCredentials(credentials);
-};
-
-/**
- * Promote user to admin (for testing purposes)
- */
-export const promoteToAdmin = (userId: string): User => {
-  return updateUser(userId, { role: 'admin' });
-};

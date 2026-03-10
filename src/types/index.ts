@@ -81,10 +81,19 @@ export interface SignupData {
   confirmPassword: string;
 }
 
+export type EmployeeRegisterPayload = Omit<SignupData, 'confirmPassword'>
+
 export interface LoginData {
   username: string;
   password: string;
 }
+
+export interface LoginResponse {
+  employee: User;
+  access_token: string;
+  token_type: string;
+}
+
 
 // Filter Types
 export interface ActivityFilters {

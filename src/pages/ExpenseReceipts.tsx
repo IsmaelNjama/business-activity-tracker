@@ -32,6 +32,7 @@ export const ExpenseReceipts: React.FC = () => {
 
   const handleActivityClick = (activity: Activity) => {
     setSelectedActivity(activity);
+    console.log("activity>>>",activity)
   };
 
   const handleCloseDialog = () => {

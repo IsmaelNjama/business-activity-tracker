@@ -1,6 +1,7 @@
 
 
 const API_BASE_URL = 'http://localhost:8000/v1';
+// const API_BASE_URL = 'https://cva7pmhdeh.execute-api.us-east-1.amazonaws.com/';
 
 
 export class BaseApiService {

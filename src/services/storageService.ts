@@ -1,7 +1,6 @@
 import { User, Activity } from '../types';
 import { STORAGE_KEYS, ERROR_MESSAGES } from '../lib/constants';
-import { useEffect } from 'react';
-import { apiService } from '@/api/baseApi';
+
 
 // Storage error class for better error handling
 export class StorageError extends Error {

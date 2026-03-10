@@ -2,7 +2,6 @@ import { User, SignupData, LoginData, LoginResponse } from '../types';
 import { authApiService } from '@/api/authApi';
 import {
   getUserByEmail,
-  getUsers,
   saveUser,
   updateUser,
   saveSession,
@@ -29,26 +28,26 @@ import { ERROR_MESSAGES } from '../lib/constants';
 // };
 
 // Store hashed passwords separately (in production, this would be in the backend database)
-interface StoredCredentials {
-  [username: string]: string; // username -> hashedPassword
-}
+// interface StoredCredentials {
+//   [username: string]: string; // username -> hashedPassword
+// }
 
-const CREDENTIALS_KEY = 'app_credentials';
+// const CREDENTIALS_KEY = 'app_credentials';
 
-const getCredentials = (): StoredCredentials => {
-  const data = localStorage.getItem(CREDENTIALS_KEY);
-  if (!data) return {};
+// const getCredentials = (): StoredCredentials => {
+//   const data = localStorage.getItem(CREDENTIALS_KEY);
+//   if (!data) return {};
   
-  try {
-    return JSON.parse(data) as StoredCredentials;
-  } catch {
-    return {};
-  }
-};
+//   try {
+//     return JSON.parse(data) as StoredCredentials;
+//   } catch {
+//     return {};
+//   }
+// };
 
-const saveCredentials = (credentials: StoredCredentials): void => {
-  localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
-};
+// const saveCredentials = (credentials: StoredCredentials): void => {
+//   localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+// };
 
 /**
  * Register a new user
